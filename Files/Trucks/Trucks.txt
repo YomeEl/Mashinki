@@ -1,0 +1,2 @@
+#Format: TypeName Width Height Speed
+BlueTruck 43,5 20 1

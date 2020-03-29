@@ -1,0 +1,3 @@
+#Format: TypeName Width Height
+Bank 50 50
+GoldMine 50 50
