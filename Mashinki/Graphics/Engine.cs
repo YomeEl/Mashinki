@@ -1,5 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 using Mashinki.Game;
 
@@ -33,11 +34,6 @@ namespace Mashinki.Graphics
             return new IntRect((int)floatRect.Left, (int)floatRect.Top, (int)floatRect.Height, (int)floatRect.Width);
         }
 
-        private bool OnScreen(FloatRect floatRect)
-        {
-            return screenRect.Intersects(ToIntRect(floatRect));
-        }
-
         public void Draw()
         {
             var rs = new RectangleShape();
@@ -46,20 +42,26 @@ namespace Mashinki.Graphics
 
             foreach (Factory factory in gameState.Factories)
             {
-                rs.Texture = TextureManager.GetTexture(factory.Type);
                 rs.Size = factory.Size * scale;
                 rs.Position = (factory.Position - cameraPosition) * scale - rs.Size / 2;
-
-                win.Draw(rs);
+                if (screenRect.Intersects(ToIntRect(rs.GetGlobalBounds())))
+                {
+                    rs.Texture = TextureManager.GetTexture(factory.Type);
+                    rs.TextureRect = new IntRect(0, 0, (int)rs.Texture.Size.X, (int)rs.Texture.Size.Y);
+                    win.Draw(rs);
+                }
             }
 
             foreach (Truck truck in gameState.Trucks)
             {
-                rs.Texture = TextureManager.GetTexture(truck.Type);
                 rs.Size = truck.Size * scale;
                 rs.Position = (truck.Position - cameraPosition) * scale - rs.Size / 2;
-                rs.TextureRect = new IntRect(0, 0, (int)rs.Texture.Size.X, (int)rs.Texture.Size.Y);
-                win.Draw(rs);
+                if (screenRect.Intersects(ToIntRect(rs.GetGlobalBounds())))
+                {
+                    rs.Texture = TextureManager.GetTexture(truck.Type);
+                    rs.TextureRect = new IntRect(0, 0, (int)rs.Texture.Size.X, (int)rs.Texture.Size.Y);
+                    win.Draw(rs);
+                }
             }
 
             //Draw UI
@@ -69,6 +71,22 @@ namespace Mashinki.Graphics
         {
             while (win.IsOpen)
             {
+                if (Keyboard.IsKeyPressed(Keyboard.Key.Left))
+                {
+                    cameraPosition.X -= 1;
+                }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.Right))
+                {
+                    cameraPosition.X += 1;
+                }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.Up))
+                {
+                    cameraPosition.Y -= 1;
+                }
+                if (Keyboard.IsKeyPressed(Keyboard.Key.Down))
+                {
+                    cameraPosition.Y += 1;
+                }
                 win.Clear(Color.White);
                 Draw();
                 win.Display();
